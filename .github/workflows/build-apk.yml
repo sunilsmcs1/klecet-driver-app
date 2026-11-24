@@ -1,6 +1,8 @@
 # Builds the driver APK in the cloud on every push. Download it from the run's "Artifacts".
 name: Build driver APK
 on: [push, workflow_dispatch]
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,3 +22,10 @@ jobs:
         with:
           name: klecet-driver-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+      - name: Publish APK as a direct download (Releases)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Driver app build ${{ github.run_number }}
+          make_latest: true
+          files: build/app/outputs/flutter-apk/app-release.apk
